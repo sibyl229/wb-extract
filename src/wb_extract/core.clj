@@ -35,7 +35,7 @@
                                   (not [?i :interaction/type :interaction.type/predicted])
                                   (and [?i :interaction/type :interaction.type/predicted]
                                        [?i :interaction/log-likelihood-score ?s]
-                                       [(> ?s 0.15)]))
+                                       [(>= ?s 1.5)]))
                          [?i :interaction/interactor-overlapping-gene ?ie]
                          [?i :interaction/interactor-overlapping-gene ?in]
                          [(not= ?ie ?in)]
