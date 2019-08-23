@@ -24,12 +24,13 @@
   :stop (disconnect datomic-conn))
 
 (defn dump-interactions [db]
-  (let [data (->> (d/q '[:find ?ti ?en ?eti ?nn ?nti ?iid ?pid
+  (let [data (->> (d/q '[:find ?ti ?en ?eti ?nn ?nti ?l ?iid ?pid
                          :in $
                          :where
                          [?i :interaction/id ?iid]
                          [?i :interaction/paper ?p]
                          [?i :interaction/type ?t]
+                         [(get-else $ ?i :interaction/log-likelihood-score "NA") ?l]
                          (or-join [?i]
                                   (not [?i :interaction/type :interaction.type/predicted])
                                   (and [?i :interaction/type :interaction.type/predicted]
@@ -52,9 +53,9 @@
                          [?p :paper/id ?pid]
                          ]
                        db)
-                  (sort-by (fn [[_ gene1 _ gene2 _ _]]
+                  (sort-by (fn [[_ gene1 _ gene2 _ _ _]]
                              (str gene1 ":" gene2)))
-                  (cons ["interactionType" "gene1" "gene1Type" "gene2" "gene2Type" "interactionID" "citation"]))]
+                  (cons ["interactionType" "gene1" "gene1Type" "gene2" "gene2Type" "predictedLogLikelihood" "interactionID" "citation"]))]
     (with-open [writer (io/writer "output/out-file.csv")]
       (csv/write-csv writer data))))
 
